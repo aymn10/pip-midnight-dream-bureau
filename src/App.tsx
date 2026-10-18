@@ -1,41 +1,709 @@
-import { useEffect, useRef, useState } from 'react';
-import { ObjectArt, Pip, Sky, Town } from './Art';
-import { DreamAudio } from './audio';
-import { DeliveryMap, Lullaby, Nightlights, Storybook } from './Projects';
-import Guestbook from './Guestbook';
+import { useEffect, useRef, useState } from "react";
+import { ObjectArt, Pip, Sky, Town } from "./Art";
+import { DreamAudio } from "./audio";
+import { DeliveryMap, Lullaby, Nightlights, Storybook } from "./Projects";
+import Guestbook from "./Guestbook";
 
-const origin=[{title:'It started with a little dust.',line:'“Oh! Who left a whole song in here?”',copy:'In a forgotten corner of the nursery, I found a music box that had forgotten its tune.',kind:'box' as const},{title:'And a few unfinished dreams.',line:'“You’re not broken. Just not done yet.”',copy:'Inside were tiny lights. A flying teacup. A moon made of toast. Dreams waiting for someone to finish them.',kind:'star' as const},{title:'Then, a light to work by.',line:'“There you are, little ideas.”',copy:'A sleepy lantern helped me see what each dream could become. Even the very shy ones.',kind:'lamp' as const},{title:'A workshop, mostly held by hope.',line:'“The crooked shelf is on purpose. Probably.”',copy:'I built a bureau from a toy chest, two cushions, and everything I could imagine.',kind:'book' as const},{title:'My first proper night shift.',line:'“Junior engineer. Very important pajamas.”',copy:'Now I carry finished dreams across the rooftops, so no little creature has to fall asleep without a story.',kind:'window' as const}];
+const origin = [
+  {
+    title: "It started with a little dust.",
+    line: "“Oh! Who left a whole song in here?”",
+    copy: "In a forgotten corner of the nursery, I found a music box that had forgotten its tune.",
+    kind: "box" as const,
+  },
+  {
+    title: "And a few unfinished dreams.",
+    line: "“You’re not broken. Just not done yet.”",
+    copy: "Inside were tiny lights. A flying teacup. A moon made of toast. Dreams waiting for someone to finish them.",
+    kind: "star" as const,
+  },
+  {
+    title: "Then, a light to work by.",
+    line: "“There you are, little ideas.”",
+    copy: "A sleepy lantern helped me see what each dream could become. Even the very shy ones.",
+    kind: "lamp" as const,
+  },
+  {
+    title: "A workshop, mostly held by hope.",
+    line: "“The crooked shelf is on purpose. Probably.”",
+    copy: "I built a bureau from a toy chest, two cushions, and everything I could imagine.",
+    kind: "book" as const,
+  },
+  {
+    title: "My first proper night shift.",
+    line: "“Junior engineer. Very important pajamas.”",
+    copy: "Now I carry finished dreams across the rooftops, so no little creature has to fall asleep without a story.",
+    kind: "window" as const,
+  },
+];
 
-function CursorTrail(){const canvas=useRef<HTMLCanvasElement>(null);useEffect(()=>{const query=matchMedia('(prefers-reduced-motion: reduce), (pointer: coarse)');let stop=()=>{};const setup=()=>{stop();if(query.matches)return;const node=canvas.current,ctx=node?.getContext('2d');if(!node||!ctx)return;let frame=0,last=0;const particles:{x:number;y:number;life:number}[]=[];const resize=()=>{node.width=innerWidth;node.height=innerHeight;};resize();const move=(e:PointerEvent)=>{if(e.timeStamp-last<45)return;last=e.timeStamp;particles.push({x:e.clientX,y:e.clientY,life:1});if(particles.length>18)particles.shift();if(!frame)frame=requestAnimationFrame(draw);};const draw=()=>{ctx.clearRect(0,0,node.width,node.height);for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.life-=.035;p.y+=.35;if(p.life<=0){particles.splice(i,1);continue;}ctx.globalAlpha=p.life*.7;ctx.fillStyle='#e9d39b';ctx.font='14px Georgia';ctx.fillText('✦',p.x,p.y);}frame=particles.length?requestAnimationFrame(draw):0;};addEventListener('pointermove',move);addEventListener('resize',resize);stop=()=>{removeEventListener('pointermove',move);removeEventListener('resize',resize);cancelAnimationFrame(frame);ctx.clearRect(0,0,node.width,node.height);};};setup();query.addEventListener('change',setup);return()=>{stop();query.removeEventListener('change',setup);};},[]);return <canvas ref={canvas} className="cursor-trail" aria-hidden="true"/>;}
-
-function Origin(){const [active,setActive]=useState(0);const root=useRef<HTMLDivElement>(null);useEffect(()=>{const observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting)setActive(Number((entry.target as HTMLElement).dataset.scene));},{rootMargin:'-25% 0px -35% 0px',threshold:0});root.current?.querySelectorAll('[data-scene]').forEach(el=>observer.observe(el));return()=>observer.disconnect();},[]);return <section id="story" className="origin section"><div className="section-heading"><div><div className="section-kicker">01 / A VERY SMALL BEGINNING</div><h2>Every dream starts<br/>with <em>a little wonder.</em></h2></div><p>I wasn’t always a dream engineer.<br/>First, I was just a very curious baby.</p></div><div ref={root} className="origin-layout"><div className="origin-stage"><div className="scene-arch"><Sky/><span className="scene-index">MIDNIGHT NURSERY · CHAPTER {active+1}</span><ObjectArt key={active} kind={origin[active].kind}/><div className="scene-floor"/></div><div className="scene-caption">{origin[active].line}</div><div className="scene-dots" aria-hidden="true">{origin.map((_,i)=><i key={i} className={active===i?'active':''}/>)}</div></div><div className="origin-chapters">{origin.map((scene,i)=><article key={scene.title} data-scene={i} className={active===i?'current':''}><span className="chapter-number">0{i+1}</span><div><h3>{scene.title}</h3><p>{scene.copy}</p><ObjectArt className="mobile-scene" kind={scene.kind}/></div></article>)}</div></div><p className="origin-footnote">An original origin story for the haX.baby character Pip.</p></section>;}
-
-function Bedroom({onStar,onMusic,onStop,playing}:{onStar:()=>void;onMusic:()=>void;onStop:()=>void;playing:boolean}){const [lit,setLit]=useState(true),[windowOpen,setWindowOpen]=useState(false),[cloud,setCloud]=useState(false),[toy,setToy]=useState(false),[constellation,setConstellation]=useState(false),[dialogue,setDialogue]=useState('Psst. Everything in here has a little story. Try touching something.');return <section id="nursery" className="bedroom section"><div className="section-heading"><div><div className="section-kicker">03 / AFTER OFFICE HOURS</div><h2>Make yourself <em>at home.</em></h2></div><p>Six little things. Six little surprises.<br/>Quietly curious visitors welcome.</p></div><div className={`room ${lit?'room-lit':''} ${windowOpen?'window-open':''}`}><div className="wallpaper"/><button className="room-object room-window" onClick={()=>{setWindowOpen(!windowOpen);setDialogue(windowOpen?'The window is tucked in again.':'A meteor shower! I think the sky is shaking out its blanket.');}} aria-pressed={windowOpen}><ObjectArt kind="window"/><span>{windowOpen?'Close the window':'Open the window'}</span></button>{windowOpen&&<div className="meteor" aria-hidden="true">✦ ─────</div>}<button className={`room-object room-cloud ${cloud?'cloud-awake':''}`} onClick={()=>{setCloud(!cloud);setDialogue(cloud?'Back to dreaming about marshmallows.':'Mallow woke up just long enough to say: you’re doing wonderfully.');}} aria-pressed={cloud}><ObjectArt kind="cloud"/><span>{cloud?'Tuck Mallow in':'Wake Mallow'}</span></button><button className={`room-object room-constellation ${constellation?'connected':''}`} onClick={()=>{setConstellation(!constellation);setDialogue('The smallest star knows a secret. Follow the numbered stars: hello, workshop, then bedtime.');}} aria-pressed={constellation}><ObjectArt kind="star"/><span>Connect the stars</span></button><div className="room-bed"><div className="bed-pillow"/><div className="bed-blanket">✧ &nbsp; · &nbsp; ✧ &nbsp; · &nbsp; ✧</div></div><button className="room-object room-lamp" onClick={()=>{setLit(!lit);setDialogue(lit?'Lights low. Dreams bright.':'A little moonlight makes everything kinder.');}} aria-pressed={lit}><ObjectArt kind="lamp"/><span>{lit?'Dim the moon':'Light the moon'}</span></button><button className="room-object room-box" onClick={()=>{if(playing){onStop();setDialogue('The music box has gone to sleep.');}else{onMusic();setDialogue('One tiny tune, fresh from the workshop.');}}}><ObjectArt kind="box"/><span>{playing?'Stop the music':'Wind the music box'}</span></button><button className={`room-object room-toy ${toy?'toy-awake':''}`} onClick={()=>{setToy(!toy);setDialogue(toy?'Captain Button is back on night watch.':'Captain Button’s mission: protect all naps. His secret weakness: cuddles.');}} aria-pressed={toy}><ObjectArt kind="toy"/><span>Meet Captain Button</span></button><button className="secret-star room-secret" onClick={onStar} aria-label="Collect secret star 3">✦ <small>03</small></button><div className="room-rug"/></div><div className="pip-dialogue" aria-live="polite"><span>PIP SAYS</span><p>“{dialogue}”</p></div></section>;}
-
-export default function App(){
-  const [audio]=useState(()=>new DreamAudio()),[muted,setMuted]=useState(true),[playing,setPlaying]=useState(false),[audioError,setAudioError]=useState(''),[chaos,setChaos]=useState(false),[day,setDay]=useState(false),[reaction,setReaction]=useState(0),[stars,setStars]=useState(0),[starMessage,setStarMessage]=useState('A secret sleeps here. Three numbered stars know the way.'),[secret,setSecret]=useState(false),[visit,setVisit]=useState(1);
-  const dialog=useRef<HTMLDialogElement>(null),visited=useRef(false);
-  useEffect(()=>{if(!visited.current){visited.current=true;try{const n=Math.max(0,Number(localStorage.getItem('pip-visits'))||0)+1;setVisit(n);localStorage.setItem('pip-visits',String(n));}catch{/* counter remains session-only */}}return()=>audio.dispose();},[audio]);
-  useEffect(()=>{const hidden=()=>{if(document.hidden){audio.stop();setPlaying(false);}};document.addEventListener('visibilitychange',hidden);return()=>document.removeEventListener('visibilitychange',hidden);},[audio]);
-  useEffect(()=>{if(secret)dialog.current?.showModal();else dialog.current?.close();},[secret]);
-  async function play(){setAudioError('');try{const started=await audio.play();if(started){setMuted(false);setPlaying(true);}}catch{setAudioError('Your browser could not start audio. Try enabling sound again.');setPlaying(false);}}
-  function stop(){audio.stop();setPlaying(false);}
-  async function toggleSound(){if(!muted){audio.mute();setMuted(true);setPlaying(false);}else{try{await audio.enable();setMuted(false);setAudioError('');audio.click();}catch{setAudioError('Audio is unavailable in this browser. All visual experiences still work.');}}}
-  function collect(index:number){if(index===stars+1){setStars(index);setStarMessage(index===3?'All three stars found. The secret dream is open!':`Star ${index} found. ${index===1?'Look beside the workshop sign.':'The last star is tucked beside the nursery bed.'}`);if(index===3)setSecret(true);}else if(stars===3)setSecret(true);else setStarMessage(`A sleepy little sequence: start with star 01 near Pip, then 02 in the workshop, then 03 at bedtime. You have ${stars} of 3.`);}
-  const reactions=['“Oh, hello! I saved you a cloud.”','“Eep! Your pointer tickles.”','“Want to see what I made?”','“That’s a very good face you have.”'];
-  return <div className={`app ${chaos?'chaos':''} ${day?'dawn':''}`} onClick={e=>{if((e.target as HTMLElement).closest('button,a'))audio.click();}}>
-    <a className="skip-link" href="#main">Skip to the dream bureau</a><CursorTrail/>
-    <header className="site-header"><a href="#home" className="brand" aria-label="Pip’s Midnight Dream Bureau home"><span className="brand-mark">☾</span><span>PIP’S<span>MIDNIGHT DREAM BUREAU</span></span></a><nav aria-label="Main navigation"><a href="#story">My story</a><a href="#workshop">The workshop</a><a href="#guestbook">Guestbook <span>↗</span></a></nav><button className="sound-toggle" onClick={()=>void toggleSound()} aria-pressed={!muted} aria-label={muted?'Enable all sound':'Mute all sound'}><span aria-hidden="true">{muted?'♩':'♫'}</span> Sound {muted?'off':'on'}</button></header>
-    <main id="main"><section id="home" className="hero"><Sky/><div className="hero-orbit" aria-hidden="true"/><div className="hero-copy"><div className="awake"><i/> PIP IS {day?'SLEEPY':'AWAKE'} <span>·</span> OPEN UNTIL THE LAST YAWN</div><p className="eyebrow">A SMALL BABY. A VERY BIG IMAGINATION.</p><h1>I build the dreams<br/>you fall <em>asleep</em><br/>inside<span className="headline-star">✧</span>.</h1><p className="hero-intro">Hello, I’m Pip. Junior Dream Engineer,<br/>professional daydreamer, and your friend<br/>at the Midnight Nursery.</p><a className="button primary" href="#workshop">Come into my world <span>↗</span></a><div className="hero-note"><span>↳</span> Shoes off. Imagination on.</div></div><div className="hero-scene"><div className="moon-ring"/><span className="orbit-label">DEPARTMENT OF SMALL WONDERS</span><button className="pip-button" aria-label="Say hello to Pip" onClick={()=>setReaction(r=>r+1)}><Pip interactive happy={day||reaction%2===1}/></button><span className="handwritten pip-caption" aria-live="polite">{reactions[reaction%reactions.length]}</span><span className="character-note">PIP / JUNIOR DREAM ENGINEER<br/>ONE (VERY SMALL) PAIR OF CAPABLE HANDS</span><button className="secret-star hero-secret" onClick={()=>collect(1)} aria-label="Collect secret star 1">✦ <small>01</small></button><div className="floating-envelope" aria-hidden="true">✧<span>one dream<br/>for you</span></div></div><div className="hero-ground"><Town/><div className="hero-bottom"><span>HANDMADE DREAMS, DELIVERED NIGHTLY</span><a href="#story">A LITTLE SCROLL, A LITTLE WONDER ↓</a><span className="counter">{String(visit).padStart(5,'0')}<small>VISITS IN THIS BROWSER</small></span></div></div></section>
-    <div className="bureau-strip"><span>✦ EST. ONE MAGICAL MIDNIGHT</span><span>100% HAND-WOUND WONDER</span><span>NO DREAM TOO SMALL ✦</span></div>
-    <Origin/>
-    <section id="workshop" className="workshop section"><div className="section-heading"><div><div className="section-kicker">02 / THINGS I’VE MADE (WITH TINY HANDS)</div><h2>The midnight<br/><em>workshop.</em></h2></div><div className="workshop-note"><p>Please touch the exhibits.<br/>That’s what they’re here for.</p><button className="secret-star" onClick={()=>collect(2)} aria-label="Collect secret star 2">✦ <small>02</small></button></div></div><div className="workshop-grid"><Lullaby playing={playing} muted={muted} onPlay={()=>void play()} onStop={stop}/><Nightlights/></div><p className="audio-error" role="status">{audioError}</p><DeliveryMap/><Storybook/></section>
-    <Bedroom onStar={()=>collect(3)} onMusic={()=>void play()} onStop={stop} playing={playing}/>
-    <div className="secret-clue"><span>✧ THE CONSTELLATION CLUB</span><p aria-live="polite">{starMessage}</p><span>{stars} / 3 STARS</span>{stars===3&&<button className="text-button" onClick={()=>setSecret(true)}>Visit the secret dream ↗</button>}</div>
-    <Guestbook/>
-    <section className="farewell"><Sky/><div className="farewell-pip"><Pip/></div><div className="section-kicker">UNTIL OUR NEXT LITTLE ADVENTURE</div><h2>The world can wait.<br/><em>Dream a little.</em></h2><p>Thanks for visiting my corner of the night.<br/>I’ll leave a little light on for you. — Pip</p><div className="farewell-links"><a href="#home">Back to the stars ↑</a><a href="#guestbook">Leave a wish ↗</a></div><Town compact/></section></main>
-    <footer><div className="footer-top"><span>PIP’S MIDNIGHT DREAM BUREAU</span><div className="world-controls"><button aria-pressed={day} onClick={()=>setDay(!day)}>{day?'☾ Midnight mood':'☀ Dawn mood'}</button><button aria-pressed={chaos} onClick={()=>setChaos(!chaos)}>✧ Chaos {chaos?'on':'off'}</button></div></div><p>Made for <a href="https://hax.baby/baby-problem" target="_blank" rel="noreferrer">haX.baby · Baby’s First Website</a>. Pip’s character canon © haX.baby.<br/>Original SVG illustrations, story, design & synthesized audio created for this site with Codex. Built with React, TypeScript & Vite.</p><span className="web-badge">BEST VIEWED WITH<br/><b>A LITTLE WONDER</b></span></footer>
-    <dialog ref={dialog} className="secret-dialog" onCancel={()=>setSecret(false)} onClose={()=>setSecret(false)}><div className="secret-world"><Sky/><button className="dialog-close button" onClick={()=>setSecret(false)} autoFocus>Return to the nursery ×</button><div className="section-kicker">YOU FOUND THE SECRET DREAM</div><h2>The moon has<br/><em>a small secret.</em></h2><div className="secret-pip"><Pip happy/></div><p>It’s a boat. And tonight, there’s room for two.<br/>“You don’t have to be big to make someone’s world brighter.”</p><span className="handwritten">One small dreamer to another. ♡</span></div></dialog>
-  </div>;
+function CursorTrail() {
+  const canvas = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const query = matchMedia(
+      "(prefers-reduced-motion: reduce), (pointer: coarse)",
+    );
+    let stop = () => {};
+    const setup = () => {
+      stop();
+      if (query.matches) return;
+      const node = canvas.current,
+        ctx = node?.getContext("2d");
+      if (!node || !ctx) return;
+      let frame = 0,
+        last = 0;
+      const particles: { x: number; y: number; life: number }[] = [];
+      const resize = () => {
+        node.width = innerWidth;
+        node.height = innerHeight;
+      };
+      resize();
+      const move = (e: PointerEvent) => {
+        if (e.timeStamp - last < 45) return;
+        last = e.timeStamp;
+        particles.push({ x: e.clientX, y: e.clientY, life: 1 });
+        if (particles.length > 18) particles.shift();
+        if (!frame) frame = requestAnimationFrame(draw);
+      };
+      const draw = () => {
+        ctx.clearRect(0, 0, node.width, node.height);
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.life -= 0.035;
+          p.y += 0.35;
+          if (p.life <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+          ctx.globalAlpha = p.life * 0.7;
+          ctx.fillStyle = "#e9d39b";
+          ctx.font = "14px Georgia";
+          ctx.fillText("✦", p.x, p.y);
+        }
+        frame = particles.length ? requestAnimationFrame(draw) : 0;
+      };
+      addEventListener("pointermove", move);
+      addEventListener("resize", resize);
+      stop = () => {
+        removeEventListener("pointermove", move);
+        removeEventListener("resize", resize);
+        cancelAnimationFrame(frame);
+        ctx.clearRect(0, 0, node.width, node.height);
+      };
+    };
+    setup();
+    query.addEventListener("change", setup);
+    return () => {
+      stop();
+      query.removeEventListener("change", setup);
+    };
+  }, []);
+  return <canvas ref={canvas} className="cursor-trail" aria-hidden="true" />;
 }
 
+function Origin() {
+  const [active, setActive] = useState(0);
+  const root = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries)
+          if (entry.isIntersecting)
+            setActive(Number((entry.target as HTMLElement).dataset.scene));
+      },
+      { rootMargin: "-25% 0px -35% 0px", threshold: 0 },
+    );
+    root.current
+      ?.querySelectorAll("[data-scene]")
+      .forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+  return (
+    <section id="story" className="origin section">
+      <div className="section-heading">
+        <div>
+          <div className="section-kicker">01 / A VERY SMALL BEGINNING</div>
+          <h2>
+            Every dream starts
+            <br />
+            with <em>a little wonder.</em>
+          </h2>
+        </div>
+        <p>
+          I wasn’t always a dream engineer.
+          <br />
+          First, I was just a very curious baby.
+        </p>
+      </div>
+      <div ref={root} className="origin-layout">
+        <div className="origin-stage">
+          <div className="scene-arch">
+            <Sky />
+            <span className="scene-index">
+              MIDNIGHT NURSERY · CHAPTER {active + 1}
+            </span>
+            <ObjectArt key={active} kind={origin[active].kind} />
+            <div className="scene-floor" />
+          </div>
+          <div className="scene-caption">{origin[active].line}</div>
+          <div className="scene-dots" aria-hidden="true">
+            {origin.map((_, i) => (
+              <i key={i} className={active === i ? "active" : ""} />
+            ))}
+          </div>
+        </div>
+        <div className="origin-chapters">
+          {origin.map((scene, i) => (
+            <article
+              key={scene.title}
+              data-scene={i}
+              className={active === i ? "current" : ""}
+            >
+              <span className="chapter-number">0{i + 1}</span>
+              <div>
+                <h3>{scene.title}</h3>
+                <p>{scene.copy}</p>
+                <ObjectArt className="mobile-scene" kind={scene.kind} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+      <p className="origin-footnote">
+        An original origin story for the haX.baby character Pip.
+      </p>
+    </section>
+  );
+}
+
+function Bedroom({
+  onStar,
+  onMusic,
+  onStop,
+  playing,
+}: {
+  onStar: () => void;
+  onMusic: () => void;
+  onStop: () => void;
+  playing: boolean;
+}) {
+  const [lit, setLit] = useState(true),
+    [windowOpen, setWindowOpen] = useState(false),
+    [cloud, setCloud] = useState(false),
+    [toy, setToy] = useState(false),
+    [constellation, setConstellation] = useState(false),
+    [dialogue, setDialogue] = useState(
+      "Psst. Everything in here has a little story. Try touching something.",
+    );
+  return (
+    <section id="nursery" className="bedroom section">
+      <div className="section-heading">
+        <div>
+          <div className="section-kicker">03 / AFTER OFFICE HOURS</div>
+          <h2>
+            Make yourself <em>at home.</em>
+          </h2>
+        </div>
+        <p>
+          Six little things. Six little surprises.
+          <br />
+          Quietly curious visitors welcome.
+        </p>
+      </div>
+      <div
+        className={`room ${lit ? "room-lit" : ""} ${windowOpen ? "window-open" : ""}`}
+      >
+        <div className="wallpaper" />
+        <button
+          className="room-object room-window"
+          onClick={() => {
+            setWindowOpen(!windowOpen);
+            setDialogue(
+              windowOpen
+                ? "The window is tucked in again."
+                : "A meteor shower! I think the sky is shaking out its blanket.",
+            );
+          }}
+          aria-pressed={windowOpen}
+        >
+          <ObjectArt kind="window" />
+          <span>{windowOpen ? "Close the window" : "Open the window"}</span>
+        </button>
+        {windowOpen && (
+          <div className="meteor" aria-hidden="true">
+            ✦ ─────
+          </div>
+        )}
+        <button
+          className={`room-object room-cloud ${cloud ? "cloud-awake" : ""}`}
+          onClick={() => {
+            setCloud(!cloud);
+            setDialogue(
+              cloud
+                ? "Back to dreaming about marshmallows."
+                : "Mallow woke up just long enough to say: you’re doing wonderfully.",
+            );
+          }}
+          aria-pressed={cloud}
+        >
+          <ObjectArt kind="cloud" />
+          <span>{cloud ? "Tuck Mallow in" : "Wake Mallow"}</span>
+        </button>
+        <button
+          className={`room-object room-constellation ${constellation ? "connected" : ""}`}
+          onClick={() => {
+            setConstellation(!constellation);
+            setDialogue(
+              "The smallest star knows a secret. Follow the numbered stars: hello, workshop, then bedtime.",
+            );
+          }}
+          aria-pressed={constellation}
+        >
+          <ObjectArt kind="star" />
+          <span>Connect the stars</span>
+        </button>
+        <div className="room-bed">
+          <div className="bed-pillow" />
+          <div className="bed-blanket">
+            ✧ &nbsp; · &nbsp; ✧ &nbsp; · &nbsp; ✧
+          </div>
+        </div>
+        <button
+          className="room-object room-lamp"
+          onClick={() => {
+            setLit(!lit);
+            setDialogue(
+              lit
+                ? "Lights low. Dreams bright."
+                : "A little moonlight makes everything kinder.",
+            );
+          }}
+          aria-pressed={lit}
+        >
+          <ObjectArt kind="lamp" />
+          <span>{lit ? "Dim the moon" : "Light the moon"}</span>
+        </button>
+        <button
+          className="room-object room-box"
+          onClick={() => {
+            if (playing) {
+              onStop();
+              setDialogue("The music box has gone to sleep.");
+            } else {
+              onMusic();
+              setDialogue("One tiny tune, fresh from the workshop.");
+            }
+          }}
+        >
+          <ObjectArt kind="box" />
+          <span>{playing ? "Stop the music" : "Wind the music box"}</span>
+        </button>
+        <button
+          className={`room-object room-toy ${toy ? "toy-awake" : ""}`}
+          onClick={() => {
+            setToy(!toy);
+            setDialogue(
+              toy
+                ? "Captain Button is back on night watch."
+                : "Captain Button’s mission: protect all naps. His secret weakness: cuddles.",
+            );
+          }}
+          aria-pressed={toy}
+        >
+          <ObjectArt kind="toy" />
+          <span>Meet Captain Button</span>
+        </button>
+        <button
+          className="secret-star room-secret"
+          onClick={onStar}
+          aria-label="Collect secret star 3 (03)"
+        >
+          ✦ <small>03</small>
+        </button>
+        <div className="room-rug" />
+      </div>
+      <div className="pip-dialogue" aria-live="polite">
+        <span>PIP SAYS</span>
+        <p>“{dialogue}”</p>
+      </div>
+    </section>
+  );
+}
+
+export default function App() {
+  const [audio] = useState(() => new DreamAudio()),
+    [muted, setMuted] = useState(true),
+    [playing, setPlaying] = useState(false),
+    [audioError, setAudioError] = useState(""),
+    [chaos, setChaos] = useState(false),
+    [day, setDay] = useState(false),
+    [reaction, setReaction] = useState(0),
+    [stars, setStars] = useState(0),
+    [starMessage, setStarMessage] = useState(
+      "A secret sleeps here. Three numbered stars know the way.",
+    ),
+    [secret, setSecret] = useState(false),
+    [visit, setVisit] = useState(1);
+  const dialog = useRef<HTMLDialogElement>(null),
+    visited = useRef(false);
+  useEffect(() => {
+    if (!visited.current) {
+      visited.current = true;
+      try {
+        const n =
+          Math.max(0, Number(localStorage.getItem("pip-visits")) || 0) + 1;
+        setVisit(n);
+        localStorage.setItem("pip-visits", String(n));
+      } catch {
+        /* counter remains session-only */
+      }
+    }
+    return () => audio.dispose();
+  }, [audio]);
+  useEffect(() => {
+    const hidden = () => {
+      if (document.hidden) {
+        audio.stop();
+        setPlaying(false);
+      }
+    };
+    document.addEventListener("visibilitychange", hidden);
+    return () => document.removeEventListener("visibilitychange", hidden);
+  }, [audio]);
+  useEffect(() => {
+    if (secret) dialog.current?.showModal();
+    else dialog.current?.close();
+  }, [secret]);
+  async function play() {
+    setAudioError("");
+    try {
+      const started = await audio.play();
+      if (started) {
+        setMuted(false);
+        setPlaying(true);
+      }
+    } catch {
+      setAudioError(
+        "Your browser could not start audio. Try enabling sound again.",
+      );
+      setPlaying(false);
+    }
+  }
+  function stop() {
+    audio.stop();
+    setPlaying(false);
+  }
+  async function toggleSound() {
+    if (!muted) {
+      audio.mute();
+      setMuted(true);
+      setPlaying(false);
+    } else {
+      try {
+        await audio.enable();
+        setMuted(false);
+        setAudioError("");
+        audio.click();
+      } catch {
+        setAudioError(
+          "Audio is unavailable in this browser. All visual experiences still work.",
+        );
+      }
+    }
+  }
+  function collect(index: number) {
+    if (index === stars + 1) {
+      setStars(index);
+      setStarMessage(
+        index === 3
+          ? "All three stars found. The secret dream is open!"
+          : `Star ${index} found. ${index === 1 ? "Look beside the workshop sign." : "The last star is tucked beside the nursery bed."}`,
+      );
+      if (index === 3) setSecret(true);
+    } else if (stars === 3) setSecret(true);
+    else
+      setStarMessage(
+        `A sleepy little sequence: start with star 01 near Pip, then 02 in the workshop, then 03 at bedtime. You have ${stars} of 3.`,
+      );
+  }
+  const reactions = [
+    "“Oh, hello! I saved you a cloud.”",
+    "“Eep! Your pointer tickles.”",
+    "“Want to see what I made?”",
+    "“That’s a very good face you have.”",
+  ];
+  return (
+    <div
+      className={`app ${chaos ? "chaos" : ""} ${day ? "dawn" : ""}`}
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest("button,a")) audio.click();
+      }}
+    >
+      <a className="skip-link" href="#main">
+        Skip to the dream bureau
+      </a>
+      <CursorTrail />
+      <header className="site-header">
+        <a
+          href="#home"
+          className="brand"
+          aria-label="Pip’s Midnight Dream Bureau home"
+        >
+          <span className="brand-mark">☾</span>
+          <span>
+            PIP’S<span>MIDNIGHT DREAM BUREAU</span>
+          </span>
+        </a>
+        <nav aria-label="Main navigation">
+          <a href="#story">My story</a>
+          <a href="#workshop">The workshop</a>
+          <a href="#guestbook">
+            Guestbook <span>↗</span>
+          </a>
+        </nav>
+        <button
+          className="sound-toggle"
+          onClick={() => void toggleSound()}
+          aria-pressed={!muted}
+          aria-label={muted ? "Sound off — Enable all sound" : "Sound on — Mute all sound"}
+        >
+          <span aria-hidden="true">{muted ? "♩" : "♫"}</span> Sound{" "}
+          {muted ? "off" : "on"}
+        </button>
+      </header>
+      <main id="main">
+        <section id="home" className="hero">
+          <Sky />
+          <div className="hero-orbit" aria-hidden="true" />
+          <div className="hero-copy">
+            <div className="awake">
+              <i /> PIP IS {day ? "SLEEPY" : "AWAKE"} <span>·</span> OPEN UNTIL
+              THE LAST YAWN
+            </div>
+            <p className="eyebrow">A SMALL BABY. A VERY BIG IMAGINATION.</p>
+            <h1>
+              I build the dreams
+              <br />
+              you fall <em>asleep</em>
+              <br />
+              inside<span className="headline-star">✧</span>.
+            </h1>
+            <p className="hero-intro">
+              Hello, I’m Pip. Junior Dream Engineer,
+              <br />
+              professional daydreamer, and your friend
+              <br />
+              at the Midnight Nursery.
+            </p>
+            <a className="button primary" href="#workshop">
+              Come into my world <span>↗</span>
+            </a>
+            <div className="hero-note">
+              <span>↳</span> Shoes off. Imagination on.
+            </div>
+          </div>
+          <div className="hero-scene">
+            <div className="moon-ring" />
+            <span className="orbit-label">DEPARTMENT OF SMALL WONDERS</span>
+            <button
+              className="pip-button"
+              aria-label="Say hello to Pip"
+              onClick={() => setReaction((r) => r + 1)}
+            >
+              <Pip interactive happy={day || reaction % 2 === 1} />
+            </button>
+            <span className="handwritten pip-caption" aria-live="polite">
+              {reactions[reaction % reactions.length]}
+            </span>
+            <span className="character-note">
+              PIP / JUNIOR DREAM ENGINEER
+              <br />
+              ONE (VERY SMALL) PAIR OF CAPABLE HANDS
+            </span>
+            <button
+              className="secret-star hero-secret"
+              onClick={() => collect(1)}
+              aria-label="Collect secret star 1 (01)"
+            >
+              ✦ <small>01</small>
+            </button>
+            <div className="floating-envelope" aria-hidden="true">
+              ✧
+              <span>
+                one dream
+                <br />
+                for you
+              </span>
+            </div>
+          </div>
+          <div className="hero-ground">
+            <Town />
+            <div className="hero-bottom">
+              <span>HANDMADE DREAMS, DELIVERED NIGHTLY</span>
+              <a href="#story">A LITTLE SCROLL, A LITTLE WONDER ↓</a>
+              <span className="counter">
+                {String(visit).padStart(5, "0")}
+                <small>VISITS IN THIS BROWSER</small>
+              </span>
+            </div>
+          </div>
+        </section>
+        <div className="bureau-strip">
+          <span>✦ EST. ONE MAGICAL MIDNIGHT</span>
+          <span>100% HAND-WOUND WONDER</span>
+          <span>NO DREAM TOO SMALL ✦</span>
+        </div>
+        <Origin />
+        <section id="workshop" className="workshop section">
+          <div className="section-heading">
+            <div>
+              <div className="section-kicker">
+                02 / THINGS I’VE MADE (WITH TINY HANDS)
+              </div>
+              <h2>
+                The midnight
+                <br />
+                <em>workshop.</em>
+              </h2>
+            </div>
+            <div className="workshop-note">
+              <p>
+                Please touch the exhibits.
+                <br />
+                That’s what they’re here for.
+              </p>
+              <button
+                className="secret-star"
+                onClick={() => collect(2)}
+                aria-label="Collect secret star 2 (02)"
+              >
+                ✦ <small>02</small>
+              </button>
+            </div>
+          </div>
+          <div className="workshop-grid">
+            <Lullaby
+              playing={playing}
+              muted={muted}
+              onPlay={() => void play()}
+              onStop={stop}
+            />
+            <Nightlights />
+          </div>
+          <p className="audio-error" role="status">
+            {audioError}
+          </p>
+          <DeliveryMap />
+          <Storybook />
+        </section>
+        <Bedroom
+          onStar={() => collect(3)}
+          onMusic={() => void play()}
+          onStop={stop}
+          playing={playing}
+        />
+        <div className="secret-clue">
+          <span>✧ THE CONSTELLATION CLUB</span>
+          <p aria-live="polite">{starMessage}</p>
+          <span>{stars} / 3 STARS</span>
+          {stars === 3 && (
+            <button className="text-button" onClick={() => setSecret(true)}>
+              Visit the secret dream ↗
+            </button>
+          )}
+        </div>
+        <Guestbook />
+        <section className="farewell">
+          <Sky />
+          <div className="farewell-pip">
+            <Pip />
+          </div>
+          <div className="section-kicker">UNTIL OUR NEXT LITTLE ADVENTURE</div>
+          <h2>
+            The world can wait.
+            <br />
+            <em>Dream a little.</em>
+          </h2>
+          <p>
+            Thanks for visiting my corner of the night.
+            <br />
+            I’ll leave a little light on for you. — Pip
+          </p>
+          <div className="farewell-links">
+            <a href="#home">Back to the stars ↑</a>
+            <a href="#guestbook">Leave a wish ↗</a>
+          </div>
+          <Town compact />
+        </section>
+      </main>
+      <footer>
+        <div className="footer-top">
+          <span>PIP’S MIDNIGHT DREAM BUREAU</span>
+          <div className="world-controls">
+            <button aria-pressed={day} onClick={() => setDay(!day)}>
+              {day ? "☾ Midnight mood" : "☀ Dawn mood"}
+            </button>
+            <button aria-pressed={chaos} onClick={() => setChaos(!chaos)}>
+              ✧ Chaos {chaos ? "on" : "off"}
+            </button>
+          </div>
+        </div>
+        <p>
+          Made for{" "}
+          <a
+            href="https://hax.baby/baby-problem"
+            target="_blank"
+            rel="noreferrer"
+          >
+            haX.baby · Baby’s First Website
+          </a>
+          . Pip’s character canon © haX.baby.
+          <br />
+          Original SVG illustrations, story, design & synthesized audio created
+          for this site with Codex. Built with React, TypeScript & Vite.
+          <br />
+          Typefaces: DM Sans & DM Serif Display (Colophon Foundry / Google Fonts),
+          locally hosted under the SIL Open Font License.
+        </p>
+        <span className="web-badge">
+          BEST VIEWED WITH
+          <br />
+          <b>A LITTLE WONDER</b>
+        </span>
+      </footer>
+      <dialog
+        aria-label="The Secret Dream"
+        ref={dialog}
+        className="secret-dialog"
+        onCancel={() => setSecret(false)}
+        onClose={() => setSecret(false)}
+      >
+        <div className="secret-world">
+          <Sky />
+          <button
+            className="dialog-close button"
+            onClick={() => setSecret(false)}
+            autoFocus
+          >
+            Return to the nursery ×
+          </button>
+          <div className="section-kicker">YOU FOUND THE SECRET DREAM</div>
+          <h2>
+            The moon has
+            <br />
+            <em>a small secret.</em>
+          </h2>
+          <div className="secret-pip">
+            <Pip happy />
+          </div>
+          <p>
+            It’s a boat. And tonight, there’s room for two.
+            <br />
+            “You don’t have to be big to make someone’s world brighter.”
+          </p>
+          <span className="handwritten">One small dreamer to another. ♡</span>
+        </div>
+      </dialog>
+    </div>
+  );
+}

@@ -1,25 +1,356 @@
-import { useState, type CSSProperties } from 'react';
-import { ObjectArt, Star } from './Art';
+import { useState, type CSSProperties } from "react";
+import { ObjectArt, Star } from "./Art";
 
-export function Lullaby({ playing, muted, onPlay, onStop }: { playing: boolean; muted: boolean; onPlay: () => void; onStop: () => void }) {
-  return <article className="project lullaby" id="lullaby"><div className="project-title"><span className="serial">INVENTION NO. 01</span><span>♪ &nbsp; SOUND DEPARTMENT</span></div><div className="lab-layout"><div className={`music-illustration ${playing?'playing':''}`}><div className="music-orbit">{['♪','✧','♫','✦'].map((x,i)=><span key={i}>{x}</span>)}</div><ObjectArt kind="box"/></div><div><h3>The Lullaby Lab</h3><p>A little melody for a very big yawn.<br/>Composed with stardust. Wound by hand.</p><div className="music-bars" aria-hidden="true">{Array.from({length:19},(_,i)=><i key={i} style={{height:`${12+(i*17)%33}px`,'--delay':`${i*.08}s`} as CSSProperties} className={playing?'moving':''}/>)}</div><div className="controls"><button className="button dark" onClick={onPlay} disabled={playing}>▶ {playing?'Lullaby playing':'Wind & play'}</button><button className="button outline" onClick={onStop} disabled={!playing}>■ Stop</button></div><p className="micro" role="status">{playing?'Now playing: A Pocketful of Moonlight':muted?'Sound is off. Playing gently turns it on.':'The music box is resting.'}</p></div></div></article>;
+export function Lullaby({
+  playing,
+  muted,
+  onPlay,
+  onStop,
+}: {
+  playing: boolean;
+  muted: boolean;
+  onPlay: () => void;
+  onStop: () => void;
+}) {
+  return (
+    <article className="project lullaby" id="lullaby">
+      <div className="project-title">
+        <span className="serial">INVENTION NO. 01</span>
+        <span>♪ &nbsp; SOUND DEPARTMENT</span>
+      </div>
+      <div className="lab-layout">
+        <div className={`music-illustration ${playing ? "playing" : ""}`}>
+          <div className="music-orbit">
+            {["♪", "✧", "♫", "✦"].map((x, i) => (
+              <span key={i}>{x}</span>
+            ))}
+          </div>
+          <ObjectArt kind="box" />
+        </div>
+        <div>
+          <h3>The Lullaby Lab</h3>
+          <p>
+            A little melody for a very big yawn.
+            <br />
+            Composed with stardust. Wound by hand.
+          </p>
+          <div className="music-bars" aria-hidden="true">
+            {Array.from({ length: 19 }, (_, i) => (
+              <i
+                key={i}
+                style={
+                  {
+                    height: `${12 + ((i * 17) % 33)}px`,
+                    "--delay": `${i * 0.08}s`,
+                  } as CSSProperties
+                }
+                className={playing ? "moving" : ""}
+              />
+            ))}
+          </div>
+          <div className="controls">
+            <button className="button dark" onClick={onPlay} disabled={playing}>
+              ▶ {playing ? "Lullaby playing" : "Wind & play"}
+            </button>
+            <button
+              className="button outline"
+              onClick={onStop}
+              aria-label="Stop lullaby"
+              disabled={!playing}
+            >
+              ■ Stop
+            </button>
+          </div>
+          <p className="micro" role="status">
+            {playing
+              ? "Now playing: A Pocketful of Moonlight"
+              : muted
+                ? "Sound is off. Playing gently turns it on."
+                : "The music box is resting."}
+          </p>
+        </div>
+      </div>
+    </article>
+  );
 }
 
-const lamps = [{name:'Moonmilk',color:'#f8db96',kind:'lamp' as const},{name:'Lilac cloud',color:'#c1b0ed',kind:'cloud' as const},{name:'Rose constellation',color:'#e8acc4',kind:'star' as const}];
+const lamps = [
+  { name: "Moonmilk", color: "#f8db96", kind: "lamp" as const },
+  { name: "Lilac cloud", color: "#c1b0ed", kind: "cloud" as const },
+  { name: "Rose constellation", color: "#e8acc4", kind: "star" as const },
+];
 export function Nightlights() {
-  const [selected,setSelected]=useState(0),[brightness,setBrightness]=useState(70);
-  return <article className="project nightlights" style={{'--lamp-color':lamps[selected].color,'--light-level':brightness/100} as CSSProperties}><div className="project-title"><span className="serial">INVENTION NO. 02</span><span>LIGHT DEPARTMENT</span></div><div className="light-stage"><div className="lamp-halo"/><ObjectArt kind={lamps[selected].kind}/><span className="shelf"/></div><h3>The Nightlight Collection</h3><p>For the corners that need a little courage.</p><div className="lamp-options" aria-label="Choose a nightlight">{lamps.map((lamp,i)=><button key={lamp.name} aria-pressed={selected===i} onClick={()=>setSelected(i)}><span style={{background:lamp.color}}/>{lamp.name}</button>)}</div><label className="brightness">Glow <input type="range" min="15" max="100" value={brightness} onChange={e=>setBrightness(Number(e.target.value))}/><output>{brightness}%</output></label></article>;
+  const [selected, setSelected] = useState(0),
+    [brightness, setBrightness] = useState(70);
+  return (
+    <article
+      className="project nightlights"
+      style={
+        {
+          "--lamp-color": lamps[selected].color,
+          "--light-level": brightness / 100,
+        } as CSSProperties
+      }
+    >
+      <div className="project-title">
+        <span className="serial">INVENTION NO. 02</span>
+        <span>LIGHT DEPARTMENT</span>
+      </div>
+      <div className="light-stage">
+        <div className="lamp-halo" />
+        <ObjectArt kind={lamps[selected].kind} />
+        <span className="shelf" />
+      </div>
+      <h3>The Nightlight Collection</h3>
+      <p>For the corners that need a little courage.</p>
+      <div className="lamp-options" aria-label="Choose a nightlight">
+        {lamps.map((lamp, i) => (
+          <button
+            key={lamp.name}
+            aria-pressed={selected === i}
+            onClick={() => setSelected(i)}
+          >
+            <span style={{ background: lamp.color }} />
+            {lamp.name}
+          </button>
+        ))}
+      </div>
+      <label className="brightness">
+        Glow{" "}
+        <input
+          type="range"
+          min="15"
+          max="100"
+          value={brightness}
+          onChange={(e) => setBrightness(Number(e.target.value))}
+        />
+        <output>{brightness}%</output>
+      </label>
+    </article>
+  );
 }
 
-const destinations = [{name:'Moth Post Office',x:125,y:175,dream:'A thousand letters turn into butterflies. Every one finds its way home.'},{name:'Cloud Cottage',x:310,y:108,dream:'A shy cloud learns to make pancakes. The syrup falls as golden rain.'},{name:'Little Ghost’s Attic',x:484,y:191,dream:'A little ghost wears tap shoes. Tonight, everyone can hear them dance.'},{name:'Moonflower Mill',x:680,y:113,dream:'The garden grows tiny moons. Pick one. There will always be another.'}];
+const destinations = [
+  {
+    name: "Moth Post Office",
+    x: 125,
+    y: 175,
+    dream:
+      "A thousand letters turn into butterflies. Every one finds its way home.",
+  },
+  {
+    name: "Cloud Cottage",
+    x: 310,
+    y: 108,
+    dream:
+      "A shy cloud learns to make pancakes. The syrup falls as golden rain.",
+  },
+  {
+    name: "Little Ghost’s Attic",
+    x: 484,
+    y: 191,
+    dream:
+      "A little ghost wears tap shoes. Tonight, everyone can hear them dance.",
+  },
+  {
+    name: "Moonflower Mill",
+    x: 680,
+    y: 113,
+    dream:
+      "The garden grows tiny moons. Pick one. There will always be another.",
+  },
+];
 export function DeliveryMap() {
-  const [selected,setSelected]=useState(0);
-  return <article className="delivery project" id="delivery"><div className="project-title"><span className="serial">INVENTION NO. 03</span><span>THE NEIGHBOURHOOD · NOT TO SCALE</span></div><div className="delivery-heading"><div><h3>Special delivery.<br/><em>Sweet dreams inside.</em></h3><p>Pick a rooftop. There’s a dream waiting behind every window.</p></div><span className="postmark">MIDNIGHT<br/>POST<br/><b>✦</b></span></div><div className="map"><svg viewBox="0 0 800 290" role="img" aria-label="Illustrated dream route through four homes"><path d="M0 235Q170 180 350 232T800 217V290H0Z" fill="#ded5bf"/><path d="M0 269Q220 223 440 267T800 252" fill="none" stroke="#c1b49c"/><path id="delivery-route" d="M125 175C130 70 220 40 310 108S400 269 484 191 610 40 680 113" fill="none" stroke="#9d829e" strokeWidth="2" strokeDasharray="5 7"/>{destinations.map((d,i)=><g key={d.name} transform={`translate(${d.x-26} ${d.y-20})`} stroke="#5b5264" strokeWidth="2"><path d="M0 65V15L26-8 52 15V65Z" fill={['#aba2ba','#c9aaa9','#aaaec1','#b8b7a1'][i]}/><path d="m-7 19 33-34 33 34" fill="none"/><path d="M9 28h12v16H9Zm23 0h12v16H32Z" fill="#fff0b2"/><path d="M22 65V49h10v16" fill="#777087"/></g>)}<g className="route-traveler" color="#a66f89"><Star size={9}/></g><g color="#ae9564"><Star x={212} y={171} size={5}/><Star x={390} y={52} size={7}/><Star x={587} y={224} size={6}/></g><path d="m30 242 10-20 10 20m685-4 10-27 10 27m10-5 9-18 9 18" fill="none" stroke="#8b9789" strokeWidth="3"/></svg>{destinations.map((d,i)=><button key={d.name} className={`map-pin ${selected===i?'selected':''}`} style={{left:`${d.x/8}%`,top:`${(d.y+54)/2.9}%`}} onClick={()=>setSelected(i)} aria-label={`Visit ${d.name}`} aria-pressed={selected===i}>{String(i+1).padStart(2,'0')}</button>)}</div><div className="delivery-ticket" aria-live="polite"><span className="ticket-icon">✧</span><div><span className="micro">DELIVERED TO</span><h4>{destinations[selected].name}</h4></div><p>{destinations[selected].dream}</p><span className="stamp">SWEET<br/>DREAMS</span></div></article>;
+  const [selected, setSelected] = useState(0);
+  return (
+    <article className="delivery project" id="delivery">
+      <div className="project-title">
+        <span className="serial">INVENTION NO. 03</span>
+        <span>THE NEIGHBOURHOOD · NOT TO SCALE</span>
+      </div>
+      <div className="delivery-heading">
+        <div>
+          <h3>
+            Special delivery.
+            <br />
+            <em>Sweet dreams inside.</em>
+          </h3>
+          <p>Pick a rooftop. There’s a dream waiting behind every window.</p>
+        </div>
+        <span className="postmark">
+          MIDNIGHT
+          <br />
+          POST
+          <br />
+          <b>✦</b>
+        </span>
+      </div>
+      <div className="map">
+        <svg
+          viewBox="0 0 800 290"
+          role="img"
+          aria-label="Illustrated dream route through four homes"
+        >
+          <path d="M0 235Q170 180 350 232T800 217V290H0Z" fill="#ded5bf" />
+          <path
+            d="M0 269Q220 223 440 267T800 252"
+            fill="none"
+            stroke="#c1b49c"
+          />
+          <path
+            id="delivery-route"
+            d="M125 175C130 70 220 40 310 108S400 269 484 191 610 40 680 113"
+            fill="none"
+            stroke="#9d829e"
+            strokeWidth="2"
+            strokeDasharray="5 7"
+          />
+          {destinations.map((d, i) => (
+            <g
+              key={d.name}
+              transform={`translate(${d.x - 26} ${d.y - 20})`}
+              stroke="#5b5264"
+              strokeWidth="2"
+            >
+              <path
+                d="M0 65V15L26-8 52 15V65Z"
+                fill={["#aba2ba", "#c9aaa9", "#aaaec1", "#b8b7a1"][i]}
+              />
+              <path d="m-7 19 33-34 33 34" fill="none" />
+              <path d="M9 28h12v16H9Zm23 0h12v16H32Z" fill="#fff0b2" />
+              <path d="M22 65V49h10v16" fill="#777087" />
+            </g>
+          ))}
+          <g className="route-traveler" color="#a66f89">
+            <Star size={9} />
+          </g>
+          <g color="#ae9564">
+            <Star x={212} y={171} size={5} />
+            <Star x={390} y={52} size={7} />
+            <Star x={587} y={224} size={6} />
+          </g>
+          <path
+            d="m30 242 10-20 10 20m685-4 10-27 10 27m10-5 9-18 9 18"
+            fill="none"
+            stroke="#8b9789"
+            strokeWidth="3"
+          />
+        </svg>
+        {destinations.map((d, i) => (
+          <button
+            key={d.name}
+            className={`map-pin ${selected === i ? "selected" : ""}`}
+            style={{ left: `${d.x / 8}%`, top: `${(d.y + 54) / 2.9}%` }}
+            onClick={() => setSelected(i)}
+            aria-label={`Visit ${d.name} — ${String(i + 1).padStart(2, '0')}`}
+            aria-pressed={selected === i}
+          >
+            {String(i + 1).padStart(2, "0")}
+          </button>
+        ))}
+      </div>
+      <div className="delivery-ticket" aria-live="polite">
+        <span className="ticket-icon">✧</span>
+        <div>
+          <span className="micro">DELIVERED TO</span>
+          <h4>{destinations[selected].name}</h4>
+        </div>
+        <p>{destinations[selected].dream}</p>
+        <span className="stamp">
+          SWEET
+          <br />
+          DREAMS
+        </span>
+      </div>
+    </article>
+  );
 }
 
-const pages = [{title:'The star who stayed small',text:'Once, a little star tried very hard to be the biggest thing in the sky. It stretched. It puffed. It sneezed a tiny spark.',kind:'star' as const},{title:'A window, far below',text:'Then it saw a dark window. Inside, a cloud was too worried to sleep. “I’m too small to help,” whispered the star.',kind:'window' as const},{title:'Just enough light',text:'The star slipped onto the windowsill. Its little glow was just enough for the cloud to find its favourite blanket.',kind:'cloud' as const},{title:'Small is a lovely size',text:'“You’re exactly the right size,” said the cloud. And for the first time, the little star stopped stretching. Goodnight, little light.',kind:'lamp' as const}];
+const pages = [
+  {
+    title: "The star who stayed small",
+    text: "Once, a little star tried very hard to be the biggest thing in the sky. It stretched. It puffed. It sneezed a tiny spark.",
+    kind: "star" as const,
+  },
+  {
+    title: "A window, far below",
+    text: "Then it saw a dark window. Inside, a cloud was too worried to sleep. “I’m too small to help,” whispered the star.",
+    kind: "window" as const,
+  },
+  {
+    title: "Just enough light",
+    text: "The star slipped onto the windowsill. Its little glow was just enough for the cloud to find its favourite blanket.",
+    kind: "cloud" as const,
+  },
+  {
+    title: "Small is a lovely size",
+    text: "“You’re exactly the right size,” said the cloud. And for the first time, the little star stopped stretching. Goodnight, little light.",
+    kind: "lamp" as const,
+  },
+];
 export function Storybook() {
-  const [page,setPage]=useState(0),[touchStart,setTouchStart]=useState<number|null>(null);
-  const turn=(delta:number)=>setPage(p=>Math.max(0,Math.min(pages.length-1,p+delta)));
-  return <article className="storybook" id="storybook"><div className="section-kicker">INVENTION NO. 04 · THE BEDTIME LIBRARY</div><h3>One more page before bed?</h3><div className="open-book" tabIndex={0} aria-label="Bedtime story. Use left and right arrow keys to turn pages." onKeyDown={e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();turn(e.key==='ArrowRight'?1:-1);}}} onTouchStart={e=>setTouchStart(e.touches[0].clientX)} onTouchEnd={e=>{if(touchStart!==null){const delta=e.changedTouches[0].clientX-touchStart;if(Math.abs(delta)>50)turn(delta<0?1:-1);setTouchStart(null);}}}><div className="book-art" key={`art${page}`}><span className="book-stars">✧ &nbsp; · &nbsp; ✦</span><ObjectArt kind={pages[page].kind}/><span className="micro">A SMALL STORY BY PIP</span></div><div className="book-text" key={page} aria-live="polite"><span className="micro">CHAPTER {['I','II','III','IV'][page]}</span><h4>{pages[page].title}</h4><p>{pages[page].text}</p><span className="page-number">— {page+1} —</span></div></div><div className="book-controls"><button className="button outline" disabled={page===0} onClick={()=>turn(-1)}>← Previous</button><span>{page+1} / {pages.length}</span><button className="button outline" disabled={page===pages.length-1} onClick={()=>turn(1)}>Next page →</button></div></article>;
+  const [page, setPage] = useState(0),
+    [touchStart, setTouchStart] = useState<number | null>(null);
+  const turn = (delta: number) =>
+    setPage((p) => Math.max(0, Math.min(pages.length - 1, p + delta)));
+  return (
+    <article className="storybook" id="storybook">
+      <div className="section-kicker">
+        INVENTION NO. 04 · THE BEDTIME LIBRARY
+      </div>
+      <h3>One more page before bed?</h3>
+      <div
+        className="open-book"
+        tabIndex={0}
+        aria-label="Bedtime story. Use left and right arrow keys to turn pages."
+        onKeyDown={(e) => {
+          if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            turn(e.key === "ArrowRight" ? 1 : -1);
+          }
+        }}
+        onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
+        onTouchEnd={(e) => {
+          if (touchStart !== null) {
+            const delta = e.changedTouches[0].clientX - touchStart;
+            if (Math.abs(delta) > 50) turn(delta < 0 ? 1 : -1);
+            setTouchStart(null);
+          }
+        }}
+      >
+        <div className="book-art" key={`art${page}`}>
+          <span className="book-stars" aria-hidden="true">✧ &nbsp; · &nbsp; ✦</span>
+          <ObjectArt kind={pages[page].kind} />
+          <span className="micro">A SMALL STORY BY PIP</span>
+        </div>
+        <div className="book-text" key={page} aria-live="polite">
+          <span className="micro">
+            CHAPTER {["I", "II", "III", "IV"][page]}
+          </span>
+          <h4>{pages[page].title}</h4>
+          <p>{pages[page].text}</p>
+          <span className="page-number">— {page + 1} —</span>
+        </div>
+      </div>
+      <div className="book-controls">
+        <button
+          className="button outline"
+          disabled={page === 0}
+          onClick={() => turn(-1)}
+        >
+          ← Previous
+        </button>
+        <span>
+          {page + 1} / {pages.length}
+        </span>
+        <button
+          className="button outline"
+          disabled={page === pages.length - 1}
+          onClick={() => turn(1)}
+        >
+          Next page →
+        </button>
+      </div>
+    </article>
+  );
 }
