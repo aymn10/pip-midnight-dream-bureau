@@ -4,7 +4,7 @@
 
 Live website: https://pips-midnight-dream-bureau-1018.basicauk12.chatgpt.site
 
-Public GitHub repository: https://github.com/aymn10/pip-midnight-dream-bureau — created and public as verified October 19; the final source/history push still needs confirmation.
+Public GitHub repository: https://github.com/aymn10/pip-midnight-dream-bureau — public access and finalist source/history push verified October 19.
 
 ## Title
 Pip’s Midnight Dream Bureau
@@ -29,8 +29,8 @@ The visual language mixes early-web keepsakes with a carefully composed storyboo
 - [x] Discoverable Easter egg: numbered stars, visible clues, real secret room.
 - [x] Visible art, audio, library and typography credits.
 - [x] Genuine local development commits created during the event.
-- [ ] Publish those commits to a **public GitHub repository**.
-- [x] Verify a **public, judge-accessible deployment**. The existing Sites URL was verified without sign-in on October 18; see the final handoff for the October 19 update status.
+- [x] Publish those commits to a **public GitHub repository**. Remote `main` verified against finalist commit `5eac2fd` on October 19.
+- [x] Verify a **public, judge-accessible deployment**. Finalist version 2 deployed successfully at the same public Sites URL on October 19.
 - [ ] Sign into the official portal and submit the actual repository URL, deployment URL and requested details before the deadline.
 
 ## Bonus features — implementation status, not awarded points

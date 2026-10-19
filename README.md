@@ -88,7 +88,7 @@ Eleven Playwright scenarios cover the full visitor journey, actual AudioContext 
 - The odometer counts page loads in this browser, not people or global visits. Browser storage may be cleared or disabled.
 - Audio has been verified programmatically in Chromium, not auditioned on physical speakers or tested on every mobile browser.
 - Touch checks use Chromium mobile emulation; physical iOS Safari / Android testing remains advisable.
-- The Sites hosting repository is not a public GitHub repository. The owner must publish the genuine local history to GitHub before submission.
+- The genuine event-time history is published in the public GitHub repository linked above; the Sites hosting source is separate.
 - No hackathon entry has been submitted. No submission ID or private form fields are fabricated.
 
 ## Deploy to Netlify

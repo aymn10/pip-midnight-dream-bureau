@@ -60,3 +60,5 @@ A new delayed-resume browser test reproduced an audio race before the fix: an ol
 - GitHub API confirmed `aymn10/pip-midnight-dream-bureau` is public. Its initial README commit is preserved when reconciling the histories; final source publication is a separate step.
 
 Limitations above still apply: Chromium emulation is not physical-device testing, audio was not auditioned, and the guestbook remains local. No hackathon entry has been submitted.
+
+Publication confirmation, October 19: GitHub `refs/heads/main` matched finalist commit `5eac2fd16c616b270f824a35df4bfa1de899cdec`. Sites version 2 deployed successfully from that exact commit at the existing public URL. The original `pip-development-history.bundle` was preserved and verified successfully. Documentation-only follow-up commits do not change the deployed application.
