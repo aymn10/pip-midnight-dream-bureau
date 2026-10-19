@@ -1,5 +1,11 @@
 # Submission preparation
 
+**Operational submission target: October 19, 2026, 4:00 PM IST.** Finish before this owner-selected cutoff; do not rely on the later official closing time.
+
+Live website: https://pips-midnight-dream-bureau-1018.basicauk12.chatgpt.site
+
+Public GitHub repository: https://github.com/aymn10/pip-midnight-dream-bureau — created and public as verified October 19; the final source/history push still needs confirmation.
+
 ## Title
 Pip’s Midnight Dream Bureau
 
@@ -24,7 +30,7 @@ The visual language mixes early-web keepsakes with a carefully composed storyboo
 - [x] Visible art, audio, library and typography credits.
 - [x] Genuine local development commits created during the event.
 - [ ] Publish those commits to a **public GitHub repository**.
-- [ ] Verify a **public, judge-accessible deployment**. Private Sites previews are not sufficient for this item.
+- [x] Verify a **public, judge-accessible deployment**. The existing Sites URL was verified without sign-in on October 18; see the final handoff for the October 19 update status.
 - [ ] Sign into the official portal and submit the actual repository URL, deployment URL and requested details before the deadline.
 
 ## Bonus features — implementation status, not awarded points

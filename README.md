@@ -4,6 +4,10 @@
 
 A small, illustrated world for **Pip**, the canonical skull baby and Junior Dream Engineer at the Midnight Nursery. Built for **haX.baby — Baby’s First Website**, Track 1, during October 18, 2026.
 
+**[Play the public website](https://pips-midnight-dream-bureau-1018.basicauk12.chatgpt.site)** · [GitHub repository](https://github.com/aymn10/pip-midnight-dream-bureau)
+
+Finalist polish on October 19 preserves the original artwork and adds immediate star clues, collected-star states, complete mobile navigation, readable inactive story chapters, and protection against overlapping audio-start requests.
+
 ## The experience
 
 An early-web personal site imagined as a handmade celestial bureau: sleepy ink-blue skies, cream stationery, lavender pajamas, tiny lit windows, and a lantern that always has room for one more dream.
@@ -57,7 +61,7 @@ $env:PIP_TEST_URL = 'http://127.0.0.1:4173'
 npm test
 ```
 
-Nine Playwright scenarios cover the full visitor journey, actual AudioContext oscillator lifecycle, guestbook validation/persistence/XSS-safe text rendering, blocked storage, reduced motion, keyboard access, touch interaction, swipe navigation, secret unlock and layouts at 1440×900, 1280×720, 768×1024, 390×844 and 360×800. See `VALIDATION.md` for executed results and limits.
+Eleven Playwright scenarios cover the full visitor journey, actual AudioContext oscillator lifecycle, overlapping audio-start requests, immediate star clues, mobile navigation targets, guestbook validation/persistence/XSS-safe text rendering, blocked storage, reduced motion, keyboard access, touch interaction, swipe navigation, secret unlock and layouts at 1440×900, 1280×720, 768×1024, 390×844 and 360×800. See `VALIDATION.md` for executed results and limits.
 
 ## Source map
 

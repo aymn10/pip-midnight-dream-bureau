@@ -1,5 +1,62 @@
 import { test, expect } from "@playwright/test";
 
+test("a late audio-start request cannot silence the newer melody", async ({ page }) => {
+  await page.addInitScript(() => {
+    const state = { release: [] as (() => void)[], notes: 0 };
+    Object.assign(window, { deferredAudio: state });
+    const resume = AudioContext.prototype.resume;
+    AudioContext.prototype.resume = function () {
+      return new Promise<void>((resolve, reject) => {
+        resume.call(this).then(() => state.release.push(resolve), reject);
+      });
+    };
+    const oscillator = AudioContext.prototype.createOscillator;
+    AudioContext.prototype.createOscillator = function () {
+      state.notes++;
+      return oscillator.call(this);
+    };
+  });
+  await page.goto('/');
+  const count = () => page.evaluate(() => (window as unknown as {deferredAudio:{release: unknown[];notes:number}}).deferredAudio);
+  await page.getByRole('button', {name:'Wind & play'}).click();
+  await page.getByRole('button', {name:'Wind & play'}).click();
+  await expect.poll(async () => (await count()).release.length).toBe(2);
+  await page.evaluate(() => (window as unknown as {deferredAudio:{release:(()=>void)[]}}).deferredAudio.release[1]());
+  await expect(page.getByRole('button', {name:'Lullaby playing'})).toBeDisabled();
+  await page.evaluate(() => (window as unknown as {deferredAudio:{release:(()=>void)[]}}).deferredAudio.release[0]());
+  const notes = (await count()).notes;
+  await expect.poll(async () => (await count()).notes).toBeGreaterThan(notes);
+  await page.getByRole('button', {name:'Mute all sound'}).click();
+});
+
+test("star clues stay beside the clicked star and mobile navigation keeps the story", async ({ page }) => {
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/');
+  const nav = page.getByRole('navigation', {name:'Main navigation'});
+  for (const name of ['My story','The workshop','The nursery','Guestbook']) {
+    const link = nav.getByRole('link', {name});
+    await expect(link).toBeVisible();
+    expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  }
+  await page.getByRole('button', {name:'Collect secret star 1'}).click();
+  const first = page.locator('.hero-secret');
+  await expect(first.locator('.star-hint')).toContainText('Look beside the workshop sign');
+  await expect(first.getByRole('button')).toHaveAttribute('aria-pressed','true');
+  const box = await first.locator('.star-hint').boundingBox();
+  expect(box!.x).toBeGreaterThanOrEqual(0);
+  expect(box!.x + box!.width).toBeLessThanOrEqual(390);
+  await first.getByRole('link', {name:'Follow the next clue'}).click();
+  await expect(page).toHaveURL(/#workshop$/);
+  await page.getByRole('button', {name:'Collect secret star 2'}).click();
+  await page.locator('.workshop-note').getByRole('link', {name:'Follow the next clue'}).click();
+  await expect(page).toHaveURL(/#nursery$/);
+  const last = page.getByRole('button', {name:'Collect secret star 3'});
+  await last.click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(last).toBeFocused();
+});
+
 test("complete journey: Pip, lamps, map, story, wishes, secret and modes", async ({
   page,
 }) => {

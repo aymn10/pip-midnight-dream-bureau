@@ -176,16 +176,36 @@ function Origin() {
   );
 }
 
+function SecretStar({ index, stars, active, message, className = "", onCollect }: {
+  index: number; stars: number; active: number | null; message: string;
+  className?: string; onCollect: (index: number) => void;
+}) {
+  const next = stars === 0 ? '#home' : stars === 1 ? '#workshop' : '#nursery';
+  return <div className={`star-discovery ${className}`}>
+    <button className="secret-star" onClick={() => onCollect(index)}
+      aria-label={`Collect secret star ${index} (0${index})`} aria-pressed={stars >= index}>
+      <span aria-hidden="true">{stars >= index ? '✧' : '✦'}</span><small>0{index}</small>
+    </button>
+    {active === index && stars < 3 && <div className="star-hint">
+      <span className="micro">{stars} / 3 LITTLE LIGHTS</span>
+      <p role="status">{message}</p>
+      <a href={next}>Follow the next clue <span aria-hidden="true">↗</span></a>
+    </div>}
+  </div>;
+}
+
 function Bedroom({
   onStar,
   onMusic,
   onStop,
   playing,
+  stars, activeStar, starMessage,
 }: {
   onStar: () => void;
   onMusic: () => void;
   onStop: () => void;
   playing: boolean;
+  stars: number; activeStar: number | null; starMessage: string;
 }) {
   const [lit, setLit] = useState(true),
     [windowOpen, setWindowOpen] = useState(false),
@@ -313,13 +333,8 @@ function Bedroom({
           <ObjectArt kind="toy" />
           <span>Meet Captain Button</span>
         </button>
-        <button
-          className="secret-star room-secret"
-          onClick={onStar}
-          aria-label="Collect secret star 3 (03)"
-        >
-          ✦ <small>03</small>
-        </button>
+        <SecretStar index={3} stars={stars} active={activeStar} message={starMessage}
+          className="room-secret" onCollect={onStar} />
         <div className="room-rug" />
       </div>
       <div className="pip-dialogue" aria-live="polite">
@@ -339,6 +354,7 @@ export default function App() {
     [day, setDay] = useState(false),
     [reaction, setReaction] = useState(0),
     [stars, setStars] = useState(0),
+    [activeStar, setActiveStar] = useState<number | null>(null),
     [starMessage, setStarMessage] = useState(
       "A secret sleeps here. Three numbered stars know the way.",
     ),
@@ -400,7 +416,7 @@ export default function App() {
       setPlaying(false);
     } else {
       try {
-        await audio.enable();
+        if (!(await audio.enable())) return;
         setMuted(false);
         setAudioError("");
         audio.click();
@@ -412,6 +428,7 @@ export default function App() {
     }
   }
   function collect(index: number) {
+    setActiveStar(index);
     if (index === stars + 1) {
       setStars(index);
       setStarMessage(
@@ -457,6 +474,7 @@ export default function App() {
         <nav aria-label="Main navigation">
           <a href="#story">My story</a>
           <a href="#workshop">The workshop</a>
+          <a href="#nursery">The nursery</a>
           <a href="#guestbook">
             Guestbook <span>↗</span>
           </a>
@@ -495,9 +513,10 @@ export default function App() {
               <br />
               at the Midnight Nursery.
             </p>
-            <a className="button primary" href="#workshop">
-              Come into my world <span>↗</span>
-            </a>
+            <div className="hero-actions">
+              <a className="button primary" href="#workshop">Come into my world <span>↗</span></a>
+              <a className="story-entry" href="#story">Start with my story <span aria-hidden="true">↓</span></a>
+            </div>
             <div className="hero-note">
               <span>↳</span> Shoes off. Imagination on.
             </div>
@@ -520,13 +539,8 @@ export default function App() {
               <br />
               ONE (VERY SMALL) PAIR OF CAPABLE HANDS
             </span>
-            <button
-              className="secret-star hero-secret"
-              onClick={() => collect(1)}
-              aria-label="Collect secret star 1 (01)"
-            >
-              ✦ <small>01</small>
-            </button>
+            <SecretStar index={1} stars={stars} active={activeStar} message={starMessage}
+              className="hero-secret" onCollect={collect} />
             <div className="floating-envelope" aria-hidden="true">
               ✧
               <span>
@@ -572,13 +586,8 @@ export default function App() {
                 <br />
                 That’s what they’re here for.
               </p>
-              <button
-                className="secret-star"
-                onClick={() => collect(2)}
-                aria-label="Collect secret star 2 (02)"
-              >
-                ✦ <small>02</small>
-              </button>
+              <SecretStar index={2} stars={stars} active={activeStar} message={starMessage}
+                onCollect={collect} />
             </div>
           </div>
           <div className="workshop-grid">
@@ -601,6 +610,7 @@ export default function App() {
           onMusic={() => void play()}
           onStop={stop}
           playing={playing}
+          stars={stars} activeStar={activeStar} starMessage={starMessage}
         />
         <div className="secret-clue">
           <span>✧ THE CONSTELLATION CLUB</span>

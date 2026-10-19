@@ -7,14 +7,24 @@ export class DreamAudio {
   private muted = true;
   private generation = 0;
   async enable() {
+    const generation = this.generation;
     this.context ??= new AudioContext();
     if (!this.master) {
       this.master = this.context.createGain();
       this.master.connect(this.context.destination);
     }
-    await this.context.resume();
+    const context = this.context;
+    try {
+      await context.resume();
+    } catch (error) {
+      if (generation !== this.generation) return false;
+      throw error;
+    }
+    // A late browser resume must never undo mute/stop or affect a newer play.
+    if (generation !== this.generation || context !== this.context) return false;
     this.muted = false;
     this.master.gain.setValueAtTime(0.16, this.context.currentTime);
+    return true;
   }
   mute() {
     this.muted = true;
@@ -58,11 +68,8 @@ export class DreamAudio {
   async play() {
     this.stop();
     const generation = this.generation;
-    await this.enable();
-    if (generation !== this.generation) {
-      this.mute();
-      return false;
-    }
+    const enabled = await this.enable();
+    if (!enabled || generation !== this.generation) return false;
     const melody = [
       523.25, 659.25, 783.99, 659.25, 587.33, 440, 523.25, 0, 659.25, 783.99,
       1046.5, 783.99, 659.25, 587.33, 523.25, 0,
